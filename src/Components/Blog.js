@@ -11,7 +11,13 @@ export default function Blog(){
 
     useEffect(()=>{
         titleRef.current.focus();
-    })
+    });
+
+    useEffect(()=>{
+        if(blogs.length){
+            document.title = blogs[0].title;
+        }
+    },[blogs]);
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
