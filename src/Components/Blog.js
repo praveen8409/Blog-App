@@ -1,5 +1,5 @@
 //Blogging App using Hooks
-import  { useState, useRef } from 'react';
+import  { useState, useRef,useEffect } from 'react';
 export default function Blog(){
     
     // const[title,setTitle] = useState("");
@@ -8,6 +8,10 @@ export default function Blog(){
     const[formData, setFormData] = useState({title:"",content:""});
     const[blogs, setBlogs] = useState([]);
     const titleRef = useRef(null);
+
+    useEffect(()=>{
+        titleRef.current.focus();
+    })
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
