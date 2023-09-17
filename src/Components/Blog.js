@@ -1,12 +1,25 @@
 //Blogging App using Hooks
-import  { useState, useRef,useEffect } from 'react';
+import  { useState, useRef,useEffect, useReducer } from 'react';
+
+function blogsReducer(state, action){
+
+    switch(action.type){
+        case "ADD":
+            return [action.blog, ...state];
+        case "REMOVE":
+            return state.filter((blog,index)=> index !== action.index);
+    }
+}
+
+
 export default function Blog(){
     
     // const[title,setTitle] = useState("");
     // const[content, setContent] = useState("");
 
     const[formData, setFormData] = useState({title:"",content:""});
-    const[blogs, setBlogs] = useState([]);
+    // const[blogs, setBlogs] = useState([]);
+    const [blogs, dispatch] = useReducer(blogsReducer, []);
     const titleRef = useRef(null);
 
     useEffect(()=>{
@@ -23,14 +36,16 @@ export default function Blog(){
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
-        setBlogs([{title:formData.title, content:formData.content},...blogs]);
+        // setBlogs([{title:formData.title, content:formData.content},...blogs]);
+        dispatch({type:'ADD',blog:{title: formData.title , content : formData.content}});
         setFormData({title:"",content:""});
         titleRef.current.focus();
         console.log(formData.content +""+ formData.t);
     }
 
     function removeBlog(i){
-        setBlogs(blogs.filter((blog,index) => i !==index));
+        // setBlogs(blogs.filter((blog,index) => i !==index));
+        dispatch({ type :"REMOVE" , index : i}) ;
         
     }
 
