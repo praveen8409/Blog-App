@@ -1,5 +1,5 @@
 //Blogging App using Hooks
-import  { useState } from 'react';
+import  { useState, useRef } from 'react';
 export default function Blog(){
     
     // const[title,setTitle] = useState("");
@@ -7,12 +7,13 @@ export default function Blog(){
 
     const[formData, setFormData] = useState({title:"",content:""});
     const[blogs, setBlogs] = useState([]);
+    const titleRef = useRef(null);
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
         setBlogs([{title:formData.title, content:formData.content},...blogs]);
         setFormData({title:"",content:""});
-        
+        titleRef.current.focus();
         console.log(formData.content +""+ formData.t);
     }
 
@@ -36,7 +37,9 @@ export default function Blog(){
                 <Row label="Title">
                         <input className="input"
                                 placeholder="Enter the Title of the Blog here.."
-                                value={formData.title} onChange={(e) => setFormData({title:e.target.value, content:formData.content})}/>
+                                value={formData.title}
+                                ref={titleRef}
+                                 onChange={(e) => setFormData({title:e.target.value, content:formData.content})}/>
                 </Row >
 
                 {/* Row component to create a row for Text area field */}
