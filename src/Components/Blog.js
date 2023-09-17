@@ -14,8 +14,10 @@ export default function Blog(){
     });
 
     useEffect(()=>{
-        if(blogs.length){
+        if(blogs.length && blogs[0].title){
             document.title = blogs[0].title;
+        }else{
+            document.title = "No Blog!"
         }
     },[blogs]);
     //Passing the synthetic event as argument to stop refreshing the page on submit
@@ -49,6 +51,7 @@ export default function Blog(){
                                 placeholder="Enter the Title of the Blog here.."
                                 value={formData.title}
                                 ref={titleRef}
+                                required
                                  onChange={(e) => setFormData({title:e.target.value, content:formData.content})}/>
                 </Row >
 
@@ -56,7 +59,9 @@ export default function Blog(){
                 <Row label="Content">
                         <textarea className="input content"
                                 placeholder="Content of the Blog goes here.."
-                                value={formData.content} onChange={(e)=> setFormData({title:formData.title, content:e.target.value})}/>
+                                value={formData.content}
+                                required
+                                 onChange={(e)=> setFormData({title:formData.title, content:e.target.value})}/>
                 </Row >
 
                 {/* Button to submit the blog */}            
