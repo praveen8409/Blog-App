@@ -1,6 +1,8 @@
 //Blogging App using Hooks
 import  { useState, useRef,useEffect, useReducer } from 'react';
-import {db} from "../firebaseinit"
+import {db} from "../firebaseinit";
+import { collection, addDoc } from "firebase/firestore"; 
+
 
 function blogsReducer(state, action){
 
@@ -25,7 +27,7 @@ export default function Blog(){
 
     useEffect(()=>{
         titleRef.current.focus();
-    });
+    },[]);
 
     useEffect(()=>{
         if(blogs.length && blogs[0].title){
@@ -34,14 +36,26 @@ export default function Blog(){
             document.title = "No Blog!"
         }
     },[blogs]);
+
+
     //Passing the synthetic event as argument to stop refreshing the page on submit
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
         // setBlogs([{title:formData.title, content:formData.content},...blogs]);
         dispatch({type:'ADD',blog:{title: formData.title , content : formData.content}});
         setFormData({title:"",content:""});
         titleRef.current.focus();
-        console.log(formData.content +""+ formData.t);
+        console.log(formData.content +""+ formData.title);
+
+        // Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "Blogs App"), {
+               name: formData.title,
+              country: formData.content,
+              time : new Date()
+         });
+        
+        //  console.log("Document written with ID: ", docRef.id);
+  
     }
 
     function removeBlog(i){
