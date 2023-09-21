@@ -1,16 +1,21 @@
 //Blogging App using Hooks
 import  { useState, useRef,useEffect, useReducer } from 'react';
 import {db} from "../firebaseinit";
-import { collection, addDoc , doc,setDoc} from "firebase/firestore"; 
+import { collection, addDoc , doc,setDoc, getDocs,deleteDoc} from "firebase/firestore"; 
 
 
 function blogsReducer(state, action){
 
     switch(action.type){
+
+        case "GET":
+            return [...action.blogs];
         case "ADD":
             return [action.blog, ...state];
         case "REMOVE":
-            return state.filter((blog,index)=> index !== action.index);
+            return state.filter((blog)=> blog.id !== action.blogId);
+        default:
+            return state;
     }
 }
 
@@ -37,6 +42,32 @@ export default function Blog(){
         }
     },[blogs]);
 
+    useEffect(() => {
+        
+        /*********************************************************************** */
+        /** get all the documents from the fireStore using getDocs() */ 
+        /*********************************************************************** */
+        async function fetchData(){
+            const snapShot =await getDocs(collection(db, "Blogs App"));
+            console.log(snapShot);
+
+            const blogs = snapShot.docs.map((doc) => {
+                return{
+                    id: doc.id,
+                    ...doc.data()
+                }
+            })
+            console.log(blogs);
+            // setBlogs(blogs);
+            dispatch({type:"GET",blogs});
+
+        }
+
+        fetchData();
+        /*********************************************************************** */
+    },[]);
+
+
 
     //Passing the synthetic event as argument to stop refreshing the page on submit
     async function handleSubmit(e){
@@ -59,9 +90,10 @@ export default function Blog(){
   
     }
 
-    function removeBlog(i){
+    async function removeBlog(id){
         // setBlogs(blogs.filter((blog,index) => i !==index));
-        dispatch({ type :"REMOVE" , index : i}) ;
+        await deleteDoc(doc(db,"Blogs App",id));
+        dispatch({ type :"REMOVE" ,  blogId:id}) ;
         
     }
 
@@ -107,10 +139,10 @@ export default function Blog(){
         <h2> Blogs </h2>
         {blogs.map((blog, i)=>(
             <div className='blog' key={i}>
-                <h3>{blog.title}</h3>
-                <p>{blog.content}</p>
+                <h3>{blog.name}</h3>
+                <p>{blog.country}</p>
                 <div className='blog-btn'>
-                <button className='remove btn' onClick={()=> removeBlog(i)}>Delete</button>
+                <button className='remove btn' onClick={()=> removeBlog(blog.id)}>Delete</button>
                 </div>
             </div>
         ))}
