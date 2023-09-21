@@ -1,7 +1,7 @@
 //Blogging App using Hooks
 import  { useState, useRef,useEffect, useReducer } from 'react';
 import {db} from "../firebaseinit";
-import { collection, addDoc , doc,setDoc, getDocs,deleteDoc} from "firebase/firestore"; 
+import { collection, addDoc , doc,setDoc, getDocs,deleteDoc, onSnapshot} from "firebase/firestore"; 
 
 
 function blogsReducer(state, action){
@@ -47,24 +47,34 @@ export default function Blog(){
         /*********************************************************************** */
         /** get all the documents from the fireStore using getDocs() */ 
         /*********************************************************************** */
-        async function fetchData(){
-            const snapShot =await getDocs(collection(db, "Blogs App"));
-            console.log(snapShot);
+        // async function fetchData(){
+            // const snapShot =await getDocs(collection(db, "Blogs App"));
+        //     console.log(snapShot);
 
-            const blogs = snapShot.docs.map((doc) => {
-                return{
-                    id: doc.id,
-                    ...doc.data()
-                }
-            })
-            console.log(blogs);
-            // setBlogs(blogs);
-            dispatch({type:"GET",blogs});
+        //     const blogs = snapShot.docs.map((doc) => {
+        //         return{
+        //             id: doc.id,
+        //             ...doc.data()
+        //         }
+        //     })
+        //     console.log(blogs);
+        //     // setBlogs(blogs);
+        //     dispatch({type:"GET",blogs});
 
-        }
-
-        fetchData();
+        // }
+        // fetchData();
         /*********************************************************************** */
+
+        const unsub =  onSnapshot(collection(db,"Blogs App"), (snapShot) => {
+            const blogs = snapShot.docs.map((doc) => {
+                    return{
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                })
+                console.log(blogs);
+                dispatch({type:"GET",blogs});
+        })
     },[]);
 
 
